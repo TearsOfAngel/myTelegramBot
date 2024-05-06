@@ -47,16 +47,10 @@ public class MainServiceImpl implements MainService {
         AppUser appUser = findOrSaveAppUser(update);
         UserState userState = appUser.getState();
         String text = update.getMessage().getText();
-        String output = "";
+        String output;
 
-        ServiceCommand serviceCommand = ServiceCommand.fromValue(text);
-
-        if (CANCEL.equals(serviceCommand)) {
-            output = cancelProcess(appUser);
-        } else if (BASIC_STATE.equals(userState)) {
+        if (BASIC_STATE.equals(userState)) {
             String[] userCommandAndArgs = text.split(" ");
-            //TODO: для дебага. Потом надо убрать
-            System.out.println(Arrays.toString(userCommandAndArgs));
             output = processServiceCommand(appUser, userCommandAndArgs);
         } else {
             log.error("Unknown user state: " + userState);
@@ -67,7 +61,6 @@ public class MainServiceImpl implements MainService {
         sendAnswer(output, chatId);
     }
 
-    //TODO: Сюда добавить новых команд
     private String processServiceCommand(AppUser appUser, String[] userCommandAndArgs) {
         ServiceCommand userCommand = ServiceCommand.fromValue(userCommandAndArgs[0]);
         String[] args = Arrays.copyOfRange(userCommandAndArgs, 1, userCommandAndArgs.length);
@@ -98,15 +91,8 @@ public class MainServiceImpl implements MainService {
 
     private String help() {
         return "Список доступных команд:\n" +
-                "/cancel - отмена выполнения текущей команды;\n" +
                 "/config MAC vlan адрес(улица и номер слитно) логин - команда для получения PON конфига;\n" +
                 "/ipcalc IP/Mask - команда для утилиты ipcalc;";
-    }
-
-    private String cancelProcess(AppUser appUser) {
-        appUser.setState(BASIC_STATE);
-        appUserDAO.save(appUser);
-        return "Команда отменена!";
     }
 
     private AppUser findOrSaveAppUser(Update update) {

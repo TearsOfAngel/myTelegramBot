@@ -13,8 +13,6 @@
         <module>bot-dispatcher</module>
         <module>node</module>
         <module>jpa</module>
-        <module>file-service</module>
-        <module>crypto-util</module>
     </modules>
 
     <properties>

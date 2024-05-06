@@ -38,11 +38,6 @@
             <version>${common-jpa.version}</version>
         </dependency>
         <dependency>
-            <groupId>ru.vcarstein</groupId>
-            <artifactId>crypto-util</artifactId>
-            <version>${common-utils.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-amqp</artifactId>
         </dependency>
