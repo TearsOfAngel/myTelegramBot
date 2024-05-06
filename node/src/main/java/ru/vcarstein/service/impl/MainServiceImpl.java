@@ -9,16 +9,12 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 import ru.vcarstein.dao.AppUserDAO;
 import ru.vcarstein.dao.RawDataDAO;
-import ru.vcarstein.entity.AppDocument;
-import ru.vcarstein.entity.AppPhoto;
 import ru.vcarstein.entity.AppUser;
 import ru.vcarstein.entity.RawData;
 import ru.vcarstein.entity.enums.UserState;
-import ru.vcarstein.exceptions.UploadFileException;
 import ru.vcarstein.service.*;
 import ru.vcarstein.ipcalc.IpCalcService;
 import ru.vcarstein.pon.PONConfigService;
-import ru.vcarstein.service.enums.LinkType;
 import ru.vcarstein.service.enums.ServiceCommand;
 
 import java.util.Arrays;
@@ -37,8 +33,6 @@ public class MainServiceImpl implements MainService {
     private final ProducerService producerService;
 
     private final AppUserDAO appUserDAO;
-
-    private final FileService fileService;
 
     private final AppUserService appUserService;
 
@@ -95,47 +89,12 @@ public class MainServiceImpl implements MainService {
         }
     }
 
-    @Override
-    public void processDocMessage(Update update) {
-        saveRawData(update);
-        var chatId = update.getMessage().getChatId();
-        try {
-            AppDocument document = fileService.processDoc(update.getMessage());
-            String link = fileService.generateLink(document.getId(), LinkType.GET_DOC);
-            var answer = "Документ успешно загружен! " + "Ссылка для скачивания: " + link;
-            sendAnswer(answer, chatId);
-        } catch (UploadFileException ex) {
-            log.error(ex);
-            String error = "Загрузка файла не удалась. Повторите попытку позже.";
-            sendAnswer(error, chatId);
-        }
-    }
-
-    @Override
-    public void processPhotoMessage(Update update) {
-        saveRawData(update);
-        long chatId = update.getMessage().getChatId();
-
-        try {
-            AppPhoto photo = fileService.processPhoto(update.getMessage());
-            String link = fileService.generateLink(photo.getId(), LinkType.GET_PHOTO);
-            String answer = "Фото успешно загружен! Ссылка для скачивания: " + link;
-            sendAnswer(answer, chatId);
-        } catch (UploadFileException ex) {
-            log.error(ex);
-            String error = "Загрузка фото не удалась. Повторите попытку позже.";
-            sendAnswer(error, chatId);
-        }
-    }
-
     private void sendAnswer(String output, Long chatId) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId);
         sendMessage.setText(output);
         producerService.produceAnswer(sendMessage);
     }
-
-
 
     private String help() {
         return "Список доступных команд:\n" +
