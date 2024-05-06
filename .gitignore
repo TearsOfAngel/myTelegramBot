@@ -36,3 +36,5 @@ build/
 
 ### Mac OS ###
 .DS_Store
+/bot-dispatcher/src/main/resources/application-local.properties
+/logs/

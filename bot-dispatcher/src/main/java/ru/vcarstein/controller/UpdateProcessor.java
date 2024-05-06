@@ -42,10 +42,6 @@ public class UpdateProcessor {
         var message = update.getMessage();
         if (message.hasText()) {
             processTextMessage(update);
-        } else if (message.hasDocument()) {
-            processDocumentMessage(update);
-        } else if (message.hasPhoto()) {
-            processPhotoMessage(update);
         } else {
             setUnsupportedMessageTypeView(update);
         }
@@ -53,21 +49,6 @@ public class UpdateProcessor {
 
     private void processTextMessage(Update update) {
         updateProducer.produce(rabbitConfiguration.getTextMessageUpdateQueue(), update);
-    }
-
-    private void processDocumentMessage(Update update) {
-        updateProducer.produce(rabbitConfiguration.getDocMessageUpdateQueue(), update);
-        setFileReceivedView(update);
-    }
-
-    private void processPhotoMessage(Update update) {
-        updateProducer.produce(rabbitConfiguration.getPhotoMessageUpdateQueue(), update);
-        setFileReceivedView(update);
-    }
-
-    private void setFileReceivedView(Update update) {
-        var sendMessage = messageUtils.generateSendMessageWithText(update, "Файл получен. Идет обработка...");
-        setView(sendMessage);
     }
 
     private void setUnsupportedMessageTypeView(Update update) {
