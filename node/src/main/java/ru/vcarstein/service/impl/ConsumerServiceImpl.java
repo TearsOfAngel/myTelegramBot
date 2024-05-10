@@ -18,7 +18,9 @@ public class ConsumerServiceImpl implements ConsumerService {
     @Override
     @RabbitListener(queues = "${spring.rabbitmq.queues.text-message-update}")
     public void consumeTextMessageUpdates(Update update) {
-        log.debug("NODE: Text message received");
+        String textMessage = update.getMessage().getText();
+        String sender = update.getMessage().getFrom().getUserName();
+        log.debug("NODE: Text message received: " + textMessage + " from: " + sender);
         mainService.processTextMessage(update);
     }
 }
